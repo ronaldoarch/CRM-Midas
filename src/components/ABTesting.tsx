@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import { toast } from "sonner"
 import { apiGet, apiPost } from "@/lib/api"
 
@@ -91,11 +90,6 @@ function getInitialActive() {
   const local = localStorage.getItem("abActive")
   if (local) return JSON.parse(local)
   return defaultActiveTests
-}
-function getInitialCompleted() {
-  const local = localStorage.getItem("abCompleted")
-  if (local) return JSON.parse(local)
-  return defaultCompletedTests
 }
 
 export default function ABTesting() {

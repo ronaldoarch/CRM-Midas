@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { AlertTriangle, TrendingDown, TrendingUp, Info } from "lucide-react"
 import { toast } from "sonner"
-import { apiGet, apiPost } from "@/lib/api"
 
 const activeAlerts = [
   {
