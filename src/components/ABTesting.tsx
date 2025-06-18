@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
-import { apiGet, apiPost } from "@/lib/api"
 
 const defaultActiveTests = [
   {
