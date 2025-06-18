@@ -222,40 +222,7 @@ export default function ABTesting() {
               </CardHeader>
               <CardContent>
                 <div className="h-[200px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={[
-                        {
-                          name: "Variante A",
-                          conversão: test.metrics.a.conversion,
-                          receita: test.metrics.a.revenue,
-                        },
-                        {
-                          name: "Variante B",
-                          conversão: test.metrics.b.conversion,
-                          receita: test.metrics.b.revenue,
-                        },
-                      ]}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis yAxisId="left" />
-                      <YAxis yAxisId="right" orientation="right" />
-                      <Tooltip />
-                      <Bar
-                        yAxisId="left"
-                        dataKey="conversão"
-                        fill="#3B82F6"
-                        name="Conversão (%)"
-                      />
-                      <Bar
-                        yAxisId="right"
-                        dataKey="receita"
-                        fill="#10B981"
-                        name="Receita (R$)"
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  {/* ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar */}
                 </div>
               </CardContent>
             </Card>
