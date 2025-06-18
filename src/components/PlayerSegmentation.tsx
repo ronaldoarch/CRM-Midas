@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Crown, AlertTriangle, TrendingDown, UserCheck } from "lucide-react"
 import { toast } from "sonner"
-import { apiGet } from "@/lib/api"
 
 const defaultSegments = [
   {
@@ -73,16 +72,6 @@ export default function PlayerSegmentation() {
   const [editId, setEditId] = useState<number | null>(null)
   const [avgValue, setAvgValue] = useState("")
   const [retention, setRetention] = useState("")
-  const [token] = useState("") // Troque pelo token real se necessário
-
-  // Ao integrar com a API, descomente o useEffect abaixo e ajuste o endpoint:
-  /*
-  useEffect(() => {
-    apiGet('/segmentos', token)
-      .then(data => setSegments(data))
-      .catch(() => setSegments(getInitialSegments()))
-  }, [token])
-  */
 
   useEffect(() => {
     localStorage.setItem("segmentos", JSON.stringify(segments))
@@ -95,7 +84,7 @@ export default function PlayerSegmentation() {
   }
 
   function saveEdit(id: number) {
-    setSegments(segments.map(seg =>
+    setSegments(segments.map((seg: any) =>
       seg.id === id ? { ...seg, avgValue, retention } : seg
     ))
     setEditId(null)
@@ -155,7 +144,7 @@ export default function PlayerSegmentation() {
                     </div>
                     <button
                       className="mt-2 bg-white/20 text-white rounded px-2 py-1 text-xs hover:bg-white/40"
-                      onClick={() => startEdit(segment)}
+                      onClick={() => startEdit(segment as any)}
                     >Editar</button>
                   </>
                 )}

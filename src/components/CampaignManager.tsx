@@ -73,7 +73,6 @@ export default function CampaignManager() {
   const [nome, setNome] = useState("")
   const [segmento, setSegmento] = useState(segmentos[0])
   const [template, setTemplate] = useState("")
-  const [token] = useState("") // Troque pelo token real se necessário
 
   // Ao integrar com a API, descomente o useEffect abaixo e ajuste o endpoint:
   /*
@@ -141,7 +140,7 @@ export default function CampaignManager() {
           {campaigns.length === 0 && (
             <div className="text-center text-muted-foreground">Nenhuma campanha cadastrada.</div>
           )}
-          {campaigns.map((campaign) => (
+          {campaigns.map((campaign: any) => (
             <Card key={campaign.id}>
               <CardHeader>
                 <CardTitle className="text-lg">{campaign.name}</CardTitle>

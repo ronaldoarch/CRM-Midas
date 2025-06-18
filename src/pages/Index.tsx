@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BarChart, Users, DollarSign, Crown, Bell } from "lucide-react"
+import { Users, DollarSign, Crown, Bell } from "lucide-react"
 import Analytics from "@/components/Analytics"
 import PlayerSegmentation from "@/components/PlayerSegmentation"
 import CampaignManager from "@/components/CampaignManager"

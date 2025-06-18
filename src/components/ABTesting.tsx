@@ -100,7 +100,6 @@ function getInitialCompleted() {
 
 export default function ABTesting() {
   const [activeTests, setActiveTests] = useState(getInitialActive)
-  const [completedTests, setCompletedTests] = useState(getInitialCompleted)
   const [nome, setNome] = useState("")
   const [variantA, setVariantA] = useState("")
   const [variantB, setVariantB] = useState("")
@@ -118,9 +117,6 @@ export default function ABTesting() {
   useEffect(() => {
     localStorage.setItem("abActive", JSON.stringify(activeTests))
   }, [activeTests])
-  useEffect(() => {
-    localStorage.setItem("abCompleted", JSON.stringify(completedTests))
-  }, [completedTests])
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault()
@@ -217,10 +213,10 @@ export default function ABTesting() {
 
       <TabsContent value="completed">
         <div className="space-y-6">
-          {completedTests.length === 0 && (
+          {defaultCompletedTests.length === 0 && (
             <div className="text-center text-muted-foreground">Nenhum teste concluído.</div>
           )}
-          {completedTests.map((test: TestType) => (
+          {defaultCompletedTests.map((test: TestType) => (
             <Card key={test.id}>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
