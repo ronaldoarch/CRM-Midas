@@ -73,6 +73,20 @@ const segmentos = [
   "Jogadores Inativos",
 ]
 
+// Definir tipo para os testes
+interface TestType {
+  id: number;
+  name: string;
+  variantA?: string;
+  variantB?: string;
+  segmento?: string;
+  metrics: {
+    a: { conversion: number; revenue: number };
+    b: { conversion: number; revenue: number };
+  };
+  winner?: string;
+}
+
 function getInitialActive() {
   const local = localStorage.getItem("abActive")
   if (local) return JSON.parse(local)
@@ -91,7 +105,6 @@ export default function ABTesting() {
   const [variantA, setVariantA] = useState("")
   const [variantB, setVariantB] = useState("")
   const [segmento, setSegmento] = useState(segmentos[0])
-  const [token] = useState("") // Troque pelo token real se necessário
 
   // Ao integrar com a API, descomente o useEffect abaixo e ajuste o endpoint:
   /*
@@ -150,7 +163,7 @@ export default function ABTesting() {
           {activeTests.length === 0 && (
             <div className="text-center text-muted-foreground">Nenhum teste em execução.</div>
           )}
-          {activeTests.map((test) => (
+          {activeTests.map((test: TestType) => (
             <Card key={test.id}>
               <CardHeader>
                 <CardTitle>{test.name}</CardTitle>
@@ -207,7 +220,7 @@ export default function ABTesting() {
           {completedTests.length === 0 && (
             <div className="text-center text-muted-foreground">Nenhum teste concluído.</div>
           )}
-          {completedTests.map((test) => (
+          {completedTests.map((test: TestType) => (
             <Card key={test.id}>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">

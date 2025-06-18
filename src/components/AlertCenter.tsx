@@ -79,9 +79,16 @@ function getInitialRules() {
   return defaultRules
 }
 
+// Definir tipo para as regras
+interface RuleType {
+  id: number;
+  name: string;
+  description: string;
+  enabled: boolean;
+}
+
 export default function AlertCenter() {
-  const [rules, setRules] = useState(getInitialRules)
-  const [token] = useState("") // Troque pelo token real se necessário
+  const [rules, setRules] = useState<RuleType[]>(getInitialRules)
 
   // Ao integrar com a API, descomente o useEffect abaixo e ajuste o endpoint:
   /*
@@ -97,10 +104,10 @@ export default function AlertCenter() {
   }, [rules])
 
   function handleSwitch(id: number) {
-    setRules(rules => rules.map(rule =>
+    setRules((rules: RuleType[]) => rules.map((rule: RuleType) =>
       rule.id === id ? { ...rule, enabled: !rule.enabled } : rule
     ))
-    const rule = rules.find(r => r.id === id)
+    const rule = rules.find((r: RuleType) => r.id === id)
     if (rule) {
       toast.info(`${rule.name} ${rule.enabled ? 'desativada' : 'ativada'}`)
     }
@@ -130,7 +137,7 @@ export default function AlertCenter() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {rules.map((rule) => (
+            {rules.map((rule: RuleType) => (
               <div
                 key={rule.id}
                 className="flex items-center justify-between space-x-4"
