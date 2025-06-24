@@ -131,8 +131,7 @@ export class MessagingService {
    */
   static async sendAlertToPlayer(
     player: PlayerContact,
-    alertMessage: string,
-    alertType: string = 'all'
+    alertMessage: string
   ): Promise<{ email: boolean; sms: boolean; whatsapp: boolean }> {
     const results = {
       email: false,
@@ -147,28 +146,22 @@ export class MessagingService {
       whatsappBody: `🚨 *Alerta Importante*\n\n${alertMessage}`,
     };
 
-    if (alertType === 'all' || alertType === 'email') {
-      if (player.email) {
-        results.email = await EmailService.sendEmail({
-          to: player.email,
-          subject: message.subject,
-          html: message.emailBody,
-        });
-      }
+    if (player.email) {
+      results.email = await EmailService.sendEmail({
+        to: player.email,
+        subject: message.subject,
+        html: message.emailBody,
+      });
     }
 
-    if (alertType === 'all' || alertType === 'sms') {
-      if (player.phone) {
-        const formattedPhone = SMSService.formatPhoneNumber(player.phone);
-        results.sms = await SMSService.sendNotification(formattedPhone, alertMessage);
-      }
+    if (player.phone) {
+      const formattedPhone = SMSService.formatPhoneNumber(player.phone);
+      results.sms = await SMSService.sendNotification(formattedPhone, alertMessage);
     }
 
-    if (alertType === 'all' || alertType === 'whatsapp') {
-      if (player.whatsapp) {
-        const formattedWhatsApp = WhatsAppService.formatWhatsAppNumber(player.whatsapp);
-        results.whatsapp = await WhatsAppService.sendNotification(formattedWhatsApp, alertMessage);
-      }
+    if (player.whatsapp) {
+      const formattedWhatsApp = WhatsAppService.formatWhatsAppNumber(player.whatsapp);
+      results.whatsapp = await WhatsAppService.sendNotification(formattedWhatsApp, alertMessage);
     }
 
     return results;
@@ -179,8 +172,7 @@ export class MessagingService {
    */
   static async sendBulkAlert(
     players: PlayerContact[],
-    alertMessage: string,
-    alertType: string = 'all'
+    alertMessage: string
   ): Promise<CampaignResult> {
     const message = {
       subject: '🚨 Alerta do Casino',
