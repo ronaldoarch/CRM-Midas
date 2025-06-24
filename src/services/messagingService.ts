@@ -74,55 +74,41 @@ export class MessagingService {
     players: PlayerContact[],
     message: CampaignMessage
   ): Promise<CampaignResult> {
-    const emailData: EmailData[] = [];
-    const smsData: SMSData[] = [];
-    const whatsappData: WhatsAppData[] = [];
+    let emailSuccess = 0, emailFailed = 0;
+    let smsSuccess = 0, smsFailed = 0;
+    let whatsappSuccess = 0, whatsappFailed = 0;
 
-    // Preparar dados para envio em lote
-    players.forEach(player => {
-      // E-mails
+    for (const player of players) {
+      // E-mail
       if (player.email && message.emailBody && EmailService.isValidEmail(player.email)) {
-        emailData.push({
+        const result = await EmailService.sendEmail({
           to: player.email,
           subject: message.subject || 'Mensagem do Casino',
           html: message.emailBody,
           templateId: message.templateId,
           dynamicTemplateData: message.dynamicData,
         });
+        result ? emailSuccess++ : emailFailed++;
       }
-
       // SMS
       if (player.phone && message.smsBody && SMSService.isValidPhoneNumber(player.phone)) {
-        smsData.push({
-          to: SMSService.formatPhoneNumber(player.phone),
-          body: message.smsBody,
-        });
+        const formattedPhone = SMSService.formatPhoneNumber(player.phone);
+        const result = await SMSService.sendCampaignSMS(formattedPhone, message.smsBody);
+        result ? smsSuccess++ : smsFailed++;
       }
-
       // WhatsApp
       if (player.whatsapp && message.whatsappBody && WhatsAppService.isValidWhatsAppNumber(player.whatsapp)) {
-        whatsappData.push({
-          to: WhatsAppService.formatWhatsAppNumber(player.whatsapp),
-          body: message.whatsappBody,
-        });
+        const formattedWhatsApp = WhatsAppService.formatWhatsAppNumber(player.whatsapp);
+        const result = await WhatsAppService.sendCampaignWhatsApp(formattedWhatsApp, message.whatsappBody);
+        result ? whatsappSuccess++ : whatsappFailed++;
       }
-    });
-
-    // Enviar em lote
-    const [emailResult, smsResult, whatsappResult] = await Promise.all([
-      emailData.length > 0 ? EmailService.sendBulkEmails({ emails: emailData }) : Promise.resolve({ success: 0, failed: 0 }),
-      smsData.length > 0 ? SMSService.sendBulkSMS({ messages: smsData }) : Promise.resolve({ success: 0, failed: 0 }),
-      whatsappData.length > 0 ? WhatsAppService.sendBulkWhatsApp({ messages: whatsappData }) : Promise.resolve({ success: 0, failed: 0 }),
-    ]);
-
-    const totalSuccess = emailResult.success + smsResult.success + whatsappResult.success;
-    const totalFailed = emailResult.failed + smsResult.failed + whatsappResult.failed;
+    }
 
     return {
-      email: emailResult,
-      sms: smsResult,
-      whatsapp: whatsappResult,
-      total: { success: totalSuccess, failed: totalFailed },
+      email: { success: emailSuccess, failed: emailFailed },
+      sms: { success: smsSuccess, failed: smsFailed },
+      whatsapp: { success: whatsappSuccess, failed: whatsappFailed },
+      total: { success: emailSuccess + smsSuccess + whatsappSuccess, failed: emailFailed + smsFailed + whatsappFailed },
     };
   }
 
