@@ -50,43 +50,6 @@ export class SMSService {
   }
 
   /**
-   * Envia múltiplos SMS em lote
-   */
-  static async sendBulkSMS(bulkData: any): Promise<{ success: number; failed: number }> {
-    try {
-      if (!twilioClient) {
-        console.warn('Twilio não configurado');
-        return { success: 0, failed: bulkData.messages.length };
-      }
-
-      const fromNumber = TWILIO_PHONE_NUMBER;
-      
-      if (!fromNumber) {
-        console.error('Número de telefone remetente não configurado');
-        return { success: 0, failed: bulkData.messages.length };
-      }
-
-      const promises = bulkData.messages.map(smsData =>
-        twilioClient!.messages.create({
-          body: smsData.body,
-          from: fromNumber,
-          to: smsData.to,
-        }).then(() => true).catch(() => false)
-      );
-
-      const results = await Promise.all(promises);
-      const success = results.filter(Boolean).length;
-      const failed = results.length - success;
-
-      console.log(`SMS em lote enviados: ${success} sucessos, ${failed} falhas`);
-      return { success, failed };
-    } catch (error) {
-      console.error('Erro ao enviar SMS em lote:', error);
-      return { success: 0, failed: bulkData.messages.length };
-    }
-  }
-
-  /**
    * Envia SMS de notificação
    */
   static async sendNotification(to: string, message: string): Promise<boolean> {

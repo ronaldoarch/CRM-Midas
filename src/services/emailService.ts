@@ -49,40 +49,6 @@ export class EmailService {
   }
 
   /**
-   * Envia múltiplos e-mails em lote
-   */
-  static async sendBulkEmails(bulkData: any): Promise<{ success: number; failed: number }> {
-    try {
-      if (!SENDGRID_API_KEY) {
-        console.warn('SendGrid API Key não configurada');
-        return { success: 0, failed: bulkData.emails.length };
-      }
-
-      const messages = bulkData.emails.map(emailData => ({
-        to: emailData.to,
-        from: FROM_EMAIL,
-        subject: emailData.subject,
-        text: emailData.text,
-        html: emailData.html,
-        templateId: emailData.templateId,
-        dynamicTemplateData: emailData.dynamicTemplateData,
-        content: [{ type: 'text/plain', value: emailData.text }],
-      }));
-
-      const results = await sgMail.sendMultiple(messages as any);
-      
-      const success = results.length;
-      const failed = bulkData.emails.length - success;
-
-      console.log(`E-mails em lote enviados: ${success} sucessos, ${failed} falhas`);
-      return { success, failed };
-    } catch (error) {
-      console.error('Erro ao enviar e-mails em lote:', error);
-      return { success: 0, failed: bulkData.emails.length };
-    }
-  }
-
-  /**
    * Envia e-mail usando template do SendGrid
    */
   static async sendTemplateEmail(
