@@ -56,50 +56,6 @@ export class WhatsAppService {
   }
 
   /**
-   * Envia múltiplas mensagens WhatsApp em lote
-   */
-  static async sendBulkWhatsApp(bulkData: any): Promise<{ success: number; failed: number }> {
-    try {
-      if (!twilioClient) {
-        console.warn('Twilio não configurado');
-        return { success: 0, failed: bulkData.messages.length };
-      }
-
-      const fromNumber = TWILIO_WHATSAPP_NUMBER;
-
-      const promises = bulkData.messages.map(whatsappData => {
-        const toNumber = whatsappData.to.startsWith('whatsapp:') 
-          ? whatsappData.to 
-          : `whatsapp:${whatsappData.to}`;
-
-        const messageData: any = {
-          body: whatsappData.body,
-          from: fromNumber,
-          to: toNumber,
-        };
-
-        if (whatsappData.mediaUrl) {
-          messageData.mediaUrl = [whatsappData.mediaUrl];
-        }
-
-        return twilioClient!.messages.create(messageData)
-          .then(() => true)
-          .catch(() => false);
-      });
-
-      const results = await Promise.all(promises);
-      const success = results.filter(Boolean).length;
-      const failed = results.length - success;
-
-      console.log(`WhatsApp em lote enviados: ${success} sucessos, ${failed} falhas`);
-      return { success, failed };
-    } catch (error) {
-      console.error('Erro ao enviar WhatsApp em lote:', error);
-      return { success: 0, failed: bulkData.messages.length };
-    }
-  }
-
-  /**
    * Envia notificação WhatsApp
    */
   static async sendNotification(to: string, message: string): Promise<boolean> {

@@ -36,6 +36,7 @@ export class EmailService {
         html: emailData.html,
         templateId: emailData.templateId,
         dynamicTemplateData: emailData.dynamicTemplateData,
+        content: [{ type: 'text/plain', value: emailData.text }],
       };
 
       await sgMail.send(msg as any);
@@ -65,6 +66,7 @@ export class EmailService {
         html: emailData.html,
         templateId: emailData.templateId,
         dynamicTemplateData: emailData.dynamicTemplateData,
+        content: [{ type: 'text/plain', value: emailData.text }],
       }));
 
       const results = await sgMail.sendMultiple(messages as any);
