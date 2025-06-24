@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+// Remover importações de NextApiRequest e NextApiResponse se não estiver usando Next.js
 
 // Defina um token secreto para validar as requisições do webhook
 const SECRET_TOKEN = process.env.WEBHOOK_SECRET_TOKEN || 'seu_token_secreto_aqui'

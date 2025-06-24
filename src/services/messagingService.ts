@@ -1,6 +1,6 @@
-import EmailService, { EmailData, BulkEmailData } from './emailService';
-import SMSService, { SMSData, BulkSMSData } from './smsService';
-import WhatsAppService, { WhatsAppData, BulkWhatsAppData } from './whatsappService';
+import EmailService, { EmailData } from './emailService';
+import SMSService, { SMSData } from './smsService';
+import WhatsAppService, { WhatsAppData } from './whatsappService';
 
 export interface PlayerContact {
   id: string;
