@@ -18,10 +18,6 @@ export interface WhatsAppData {
   mediaUrl?: string;
 }
 
-export interface BulkWhatsAppData {
-  messages: WhatsAppData[];
-}
-
 export class WhatsAppService {
   /**
    * Envia uma mensagem WhatsApp individual
@@ -62,7 +58,7 @@ export class WhatsAppService {
   /**
    * Envia múltiplas mensagens WhatsApp em lote
    */
-  static async sendBulkWhatsApp(bulkData: BulkWhatsAppData): Promise<{ success: number; failed: number }> {
+  static async sendBulkWhatsApp(bulkData: any): Promise<{ success: number; failed: number }> {
     try {
       if (!twilioClient) {
         console.warn('Twilio não configurado');

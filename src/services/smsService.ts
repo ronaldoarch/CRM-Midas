@@ -17,10 +17,6 @@ export interface SMSData {
   from?: string;
 }
 
-export interface BulkSMSData {
-  messages: SMSData[];
-}
-
 export class SMSService {
   /**
    * Envia um SMS individual
@@ -56,7 +52,7 @@ export class SMSService {
   /**
    * Envia múltiplos SMS em lote
    */
-  static async sendBulkSMS(bulkData: BulkSMSData): Promise<{ success: number; failed: number }> {
+  static async sendBulkSMS(bulkData: any): Promise<{ success: number; failed: number }> {
     try {
       if (!twilioClient) {
         console.warn('Twilio não configurado');

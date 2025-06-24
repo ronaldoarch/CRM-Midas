@@ -17,10 +17,6 @@ export interface EmailData {
   dynamicTemplateData?: Record<string, any>;
 }
 
-export interface BulkEmailData {
-  emails: EmailData[];
-}
-
 export class EmailService {
   /**
    * Envia um e-mail individual
@@ -54,7 +50,7 @@ export class EmailService {
   /**
    * Envia múltiplos e-mails em lote
    */
-  static async sendBulkEmails(bulkData: BulkEmailData): Promise<{ success: number; failed: number }> {
+  static async sendBulkEmails(bulkData: any): Promise<{ success: number; failed: number }> {
     try {
       if (!SENDGRID_API_KEY) {
         console.warn('SendGrid API Key não configurada');

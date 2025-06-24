@@ -132,7 +132,7 @@ export class MessagingService {
   static async sendAlertToPlayer(
     player: PlayerContact,
     alertMessage: string,
-    alertType: 'email' | 'sms' | 'whatsapp' | 'all' = 'all'
+    alertType: string = 'all'
   ): Promise<{ email: boolean; sms: boolean; whatsapp: boolean }> {
     const results = {
       email: false,
@@ -180,7 +180,7 @@ export class MessagingService {
   static async sendBulkAlert(
     players: PlayerContact[],
     alertMessage: string,
-    alertType: 'email' | 'sms' | 'whatsapp' | 'all' = 'all'
+    alertType: string = 'all'
   ): Promise<CampaignResult> {
     const message = {
       subject: '🚨 Alerta do Casino',
