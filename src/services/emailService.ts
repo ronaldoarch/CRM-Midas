@@ -42,7 +42,7 @@ export class EmailService {
         dynamicTemplateData: emailData.dynamicTemplateData,
       };
 
-      await sgMail.send(msg);
+      await sgMail.send(msg as any);
       console.log(`E-mail enviado com sucesso para: ${emailData.to}`);
       return true;
     } catch (error) {
@@ -71,7 +71,7 @@ export class EmailService {
         dynamicTemplateData: emailData.dynamicTemplateData,
       }));
 
-      const results = await sgMail.sendMultiple(messages);
+      const results = await sgMail.sendMultiple(messages as any);
       
       const success = results.length;
       const failed = bulkData.emails.length - success;
