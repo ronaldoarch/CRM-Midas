@@ -1,10 +1,6 @@
 import { connectMongo } from "@/lib/mongo";
 
-function formatDate(date: Date) {
-  return date.toISOString().slice(0, 10);
-}
-
-export default async function handler(req: any, res: any) {
+export default async function handler(_: any, res: any) {
   const db = await connectMongo();
   const now = new Date();
   const start = new Date(now.getTime() - 29 * 24 * 60 * 60 * 1000);
