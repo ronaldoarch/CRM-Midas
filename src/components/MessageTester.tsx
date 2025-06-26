@@ -8,9 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Mail, MessageSquare, MessageCircle, CheckCircle, XCircle, AlertCircle } from "lucide-react"
 import { toast } from "sonner"
 import EmailService from "@/services/emailService"
-import SMSService from "@/services/smsService"
-import WhatsAppService from "@/services/whatsappService"
-import MessagingService from "@/services/messagingService"
 
 export default function MessageTester() {
   const [emailData, setEmailData] = useState({
@@ -40,8 +37,6 @@ export default function MessageTester() {
     sms: null as boolean | null,
     whatsapp: null as boolean | null,
   })
-
-  const serviceStatus = MessagingService.getServiceStatus()
 
   const handleEmailTest = async () => {
     if (!emailData.to) {
@@ -84,15 +79,19 @@ export default function MessageTester() {
     setResults(prev => ({ ...prev, sms: null }))
 
     try {
-      const formattedPhone = SMSService.formatPhoneNumber(smsData.to)
-      const success = await SMSService.sendSMS({
-        to: formattedPhone,
-        body: smsData.body,
+      const formattedPhone = smsData.to.replace(/\D/g, '')
+      const to = formattedPhone.startsWith('+') ? formattedPhone : `+55${formattedPhone}`
+      const response = await fetch('/api/send-sms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to,
+          body: smsData.body,
+        })
       })
-
-      setResults(prev => ({ ...prev, sms: success }))
-      
-      if (success) {
+      const result = await response.json()
+      setResults(prev => ({ ...prev, sms: result.success }))
+      if (result.success) {
         toast.success("SMS enviado com sucesso!")
       } else {
         toast.error("Falha ao enviar SMS")
@@ -115,15 +114,19 @@ export default function MessageTester() {
     setResults(prev => ({ ...prev, whatsapp: null }))
 
     try {
-      const formattedWhatsApp = WhatsAppService.formatWhatsAppNumber(whatsappData.to)
-      const success = await WhatsAppService.sendWhatsApp({
-        to: formattedWhatsApp,
-        body: whatsappData.body,
+      const formattedWhatsApp = whatsappData.to.replace(/\D/g, '')
+      const to = formattedWhatsApp.startsWith('+') ? formattedWhatsApp : `+55${formattedWhatsApp}`
+      const response = await fetch('/api/send-whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to,
+          body: whatsappData.body,
+        })
       })
-
-      setResults(prev => ({ ...prev, whatsapp: success }))
-      
-      if (success) {
+      const result = await response.json()
+      setResults(prev => ({ ...prev, whatsapp: result.success }))
+      if (result.success) {
         toast.success("WhatsApp enviado com sucesso!")
       } else {
         toast.error("Falha ao enviar WhatsApp")
@@ -150,43 +153,6 @@ export default function MessageTester() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Status dos Serviços</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center space-x-2">
-              <Mail className="h-4 w-4" />
-              <span>E-mail (SendGrid):</span>
-              {serviceStatus.email ? (
-                <CheckCircle className="h-4 w-4 text-green-500" />
-              ) : (
-                <XCircle className="h-4 w-4 text-red-500" />
-              )}
-            </div>
-            <div className="flex items-center space-x-2">
-              <MessageSquare className="h-4 w-4" />
-              <span>SMS (Twilio):</span>
-              {serviceStatus.sms ? (
-                <CheckCircle className="h-4 w-4 text-green-500" />
-              ) : (
-                <XCircle className="h-4 w-4 text-red-500" />
-              )}
-            </div>
-            <div className="flex items-center space-x-2">
-              <MessageCircle className="h-4 w-4" />
-              <span>WhatsApp (Twilio):</span>
-              {serviceStatus.whatsapp ? (
-                <CheckCircle className="h-4 w-4 text-green-500" />
-              ) : (
-                <XCircle className="h-4 w-4 text-red-500" />
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       <Tabs defaultValue="email" className="space-y-4">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="email" className="flex items-center space-x-2">
@@ -241,7 +207,7 @@ export default function MessageTester() {
               </div>
               <Button 
                 onClick={handleEmailTest} 
-                disabled={loading.email || !serviceStatus.email}
+                disabled={loading.email}
                 className="w-full"
               >
                 {loading.email ? "Enviando..." : "Enviar E-mail de Teste"}
@@ -282,7 +248,7 @@ export default function MessageTester() {
               </div>
               <Button 
                 onClick={handleSMSTest} 
-                disabled={loading.sms || !serviceStatus.sms}
+                disabled={loading.sms}
                 className="w-full"
               >
                 {loading.sms ? "Enviando..." : "Enviar SMS de Teste"}
@@ -323,7 +289,7 @@ export default function MessageTester() {
               </div>
               <Button 
                 onClick={handleWhatsAppTest} 
-                disabled={loading.whatsapp || !serviceStatus.whatsapp}
+                disabled={loading.whatsapp}
                 className="w-full"
               >
                 {loading.whatsapp ? "Enviando..." : "Enviar WhatsApp de Teste"}

@@ -61,9 +61,26 @@ const defaultSegments = [
   },
 ]
 
+function restoreIcons(segments: any[]) {
+  const iconMap = {
+    1: Users,
+    2: Crown,
+    3: AlertTriangle,
+    4: TrendingDown,
+    5: UserCheck,
+  }
+  return segments.map(seg => ({
+    ...seg,
+    icon: iconMap[seg.id] || Users,
+  }))
+}
+
 function getInitialSegments() {
   const local = localStorage.getItem("segmentos")
-  if (local) return JSON.parse(local)
+  if (local) {
+    const parsed = JSON.parse(local)
+    return restoreIcons(parsed)
+  }
   return defaultSegments
 }
 
@@ -108,82 +125,10 @@ export default function PlayerSegmentation() {
                 <span>{segment.percentage}% do total</span>
                 <span>{segment.growth}</span>
               </div>
-              <div className="mt-2 space-y-1">
-                {editId === segment.id ? (
-                  <>
-                    <div className="flex justify-between text-xs text-white/80 items-center gap-2">
-                      <span>Valor Médio:</span>
-                      <input
-                        className="rounded px-1 text-black w-20"
-                        value={avgValue}
-                        onChange={e => setAvgValue(e.target.value)}
-                      />
-                    </div>
-                    <div className="flex justify-between text-xs text-white/80 items-center gap-2">
-                      <span>Retenção:</span>
-                      <input
-                        className="rounded px-1 text-black w-16"
-                        value={retention}
-                        onChange={e => setRetention(e.target.value)}
-                      />
-                    </div>
-                    <button
-                      className="mt-2 bg-white/80 text-black rounded px-2 py-1 text-xs"
-                      onClick={() => saveEdit(segment.id)}
-                    >Salvar</button>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex justify-between text-xs text-white/80">
-                      <span>Valor Médio:</span>
-                      <span>{segment.avgValue}</span>
-                    </div>
-                    <div className="flex justify-between text-xs text-white/80">
-                      <span>Retenção:</span>
-                      <span>{segment.retention}</span>
-                    </div>
-                    <button
-                      className="mt-2 bg-white/20 text-white rounded px-2 py-1 text-xs hover:bg-white/40"
-                      onClick={() => startEdit(segment as any)}
-                    >Editar</button>
-                  </>
-                )}
-              </div>
             </CardContent>
           </Card>
         ))}
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Insights Detalhados</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div>
-              <h4 className="font-medium mb-2">Jogadores VIP</h4>
-              <p className="text-sm text-muted-foreground">
-                Alta taxa de retenção ({segments[1].retention}) indica forte engajamento. Recomendamos criar
-                campanhas exclusivas para manter o interesse.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-medium mb-2">Churn Alto Risco</h4>
-              <p className="text-sm text-muted-foreground">
-                Necessidade de ações imediatas para recuperação. Sugerimos bônus
-                personalizados e contato direto.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-medium mb-2">Novos Jogadores</h4>
-              <p className="text-sm text-muted-foreground">
-                Crescimento positivo ({segments[0].growth}) com boa conversão inicial. Focar em
-                onboarding e primeiras experiências.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 } 
