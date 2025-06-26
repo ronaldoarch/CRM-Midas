@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Crown, AlertTriangle, TrendingDown, UserCheck, LucideIcon } from "lucide-react"
-import { toast } from "sonner"
+// import { toast } from "sonner"
 
 const defaultSegments = [
   {
@@ -85,7 +85,7 @@ function getInitialSegments() {
 }
 
 export default function PlayerSegmentation() {
-  const [segments, setSegments] = useState(getInitialSegments)
+  const [segments] = useState(getInitialSegments)
 
   useEffect(() => {
     localStorage.setItem("segmentos", JSON.stringify(segments))
