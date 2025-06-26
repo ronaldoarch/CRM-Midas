@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Crown, AlertTriangle, TrendingDown, UserCheck } from "lucide-react"
+import { Users, Crown, AlertTriangle, TrendingDown, UserCheck, LucideIcon } from "lucide-react"
 import { toast } from "sonner"
 
 const defaultSegments = [
@@ -61,8 +61,8 @@ const defaultSegments = [
   },
 ]
 
-function restoreIcons(segments: any[]) {
-  const iconMap = {
+function restoreIcons(segments: any[]): any[] {
+  const iconMap: Record<number, LucideIcon> = {
     1: Users,
     2: Crown,
     3: AlertTriangle,
@@ -71,7 +71,7 @@ function restoreIcons(segments: any[]) {
   }
   return segments.map(seg => ({
     ...seg,
-    icon: iconMap[seg.id] || Users,
+    icon: iconMap[Number(seg.id)] || Users,
   }))
 }
 
@@ -86,48 +86,34 @@ function getInitialSegments() {
 
 export default function PlayerSegmentation() {
   const [segments, setSegments] = useState(getInitialSegments)
-  const [editId, setEditId] = useState<number | null>(null)
-  const [avgValue, setAvgValue] = useState("")
-  const [retention, setRetention] = useState("")
 
   useEffect(() => {
     localStorage.setItem("segmentos", JSON.stringify(segments))
   }, [segments])
 
-  function startEdit(segment: any) {
-    setEditId(segment.id)
-    setAvgValue(segment.avgValue)
-    setRetention(segment.retention)
-  }
-
-  function saveEdit(id: number) {
-    setSegments(segments.map((seg: any) =>
-      seg.id === id ? { ...seg, avgValue, retention } : seg
-    ))
-    setEditId(null)
-    toast.success("Segmento atualizado com sucesso!")
-  }
-
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {segments.map((segment: any) => (
-          <Card key={segment.id} className={`bg-gradient-to-br ${segment.color}`}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-white">
-                {segment.name}
-              </CardTitle>
-              <segment.icon className="h-4 w-4 text-white" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-white">{segment.count}</div>
-              <div className="flex items-center justify-between text-xs text-white/80">
-                <span>{segment.percentage}% do total</span>
-                <span>{segment.growth}</span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+        {segments.map((segment: any) => {
+          const Icon = segment.icon as LucideIcon
+          return (
+            <Card key={segment.id} className={`bg-gradient-to-br ${segment.color}`}>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-white">
+                  {segment.name}
+                </CardTitle>
+                <Icon className="h-4 w-4 text-white" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-white">{segment.count}</div>
+                <div className="flex items-center justify-between text-xs text-white/80">
+                  <span>{segment.percentage}% do total</span>
+                  <span>{segment.growth}</span>
+                </div>
+              </CardContent>
+            </Card>
+          )
+        })}
       </div>
     </div>
   )
