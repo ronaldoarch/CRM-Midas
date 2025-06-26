@@ -30,11 +30,18 @@ const activityData = [
 
 export default function Analytics() {
   const [metricsByDate, setMetricsByDate] = useState<any>(null)
+  const [pageviewsData, setPageviewsData] = useState<any[]>([])
 
   useEffect(() => {
     fetch("/api/metrics-by-date")
       .then(res => res.json())
       .then(setMetricsByDate)
+  }, [])
+
+  useEffect(() => {
+    fetch("/api/pageviews")
+      .then(res => res.json())
+      .then(data => setPageviewsData(data.pageviews || []))
   }, [])
 
   // Preparar dados para os gráficos
@@ -49,6 +56,14 @@ export default function Analytics() {
     Apostas: d.total,
     Valor: d.sum,
   })) || []
+
+  // Preparar dados de pageviews agregados por data
+  const pageviewsByDate: Record<string, number> = {}
+  pageviewsData.forEach((pv: any) => {
+    if (!pageviewsByDate[pv._id.date]) pageviewsByDate[pv._id.date] = 0
+    pageviewsByDate[pv._id.date] += pv.total
+  })
+  const pageviewsChartData = Object.entries(pageviewsByDate).map(([date, total]) => ({ date, total }))
 
   return (
     <div className="space-y-6">
@@ -189,6 +204,25 @@ export default function Analytics() {
                   <Tooltip />
                   <Bar yAxisId="left" dataKey="Apostas" fill="#8B5CF6" name="Apostas" />
                   <Bar yAxisId="right" dataKey="Valor" fill="#F59E0B" name="Valor (R$)" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Pageviews por Dia</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={pageviewsChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="total" fill="#6366F1" name="Pageviews" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
