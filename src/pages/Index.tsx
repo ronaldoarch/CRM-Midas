@@ -7,8 +7,10 @@ import CampaignManager from "@/components/CampaignManager"
 import AlertCenter from "@/components/AlertCenter"
 import ABTesting from "@/components/ABTesting"
 import { useEffect, useState } from "react"
+import usePageview from "../hooks/usePageview"
 
 export default function Index() {
+  usePageview();
   const [metrics, setMetrics] = useState<any>(null)
 
   useEffect(() => {
