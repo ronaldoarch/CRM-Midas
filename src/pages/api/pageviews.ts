@@ -1,6 +1,6 @@
 import { connectMongo } from "@/lib/mongo";
 
-export default async function handler(req: any, res: any) {
+export default async function handler(_req: any, res: any) {
   const db = await connectMongo();
 
   // Agregar pageviews por data e rota

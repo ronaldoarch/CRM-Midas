@@ -1,24 +1,14 @@
-import { useRouter } from "next/router";
+import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
 export default function usePageview() {
-  const router = useRouter();
+  const location = useLocation();
 
   useEffect(() => {
-    const handleRouteChange = (url: string) => {
-      fetch("/api/pageview", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: url })
-      });
-    };
-
-    router.events.on("routeChangeComplete", handleRouteChange);
-    // Page inicial
-    handleRouteChange(router.asPath);
-
-    return () => {
-      router.events.off("routeChangeComplete", handleRouteChange);
-    };
-  }, [router]);
+    fetch("/api/pageview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: location.pathname })
+    });
+  }, [location]);
 } 
