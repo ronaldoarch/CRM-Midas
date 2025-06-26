@@ -74,14 +74,31 @@ export default function CampaignManager() {
   const [segmento, setSegmento] = useState(segmentos[0])
   const [template, setTemplate] = useState("")
 
-  // Ao integrar com a API, descomente o useEffect abaixo e ajuste o endpoint:
-  /*
+  // Segmentação inteligente
+  const [users, setUsers] = useState<any[]>([])
+  const [deposits, setDeposits] = useState<any[]>([])
+  const [bets, setBets] = useState<any[]>([])
+
   useEffect(() => {
-    apiGet('/campanhas', token)
-      .then(data => setCampaigns(data))
-      .catch(() => setCampaigns(getInitialCampaigns()))
-  }, [token])
-  */
+    fetch("/api/users").then(res => res.json()).then(setUsers)
+    fetch("/api/deposits").then(res => res.json()).then(setDeposits)
+    fetch("/api/bets").then(res => res.json()).then(setBets)
+  }, [])
+
+  const usersNoDeposit = users.filter(u =>
+    !deposits.some(d => d.user_id === u.user_id)
+  )
+
+  const usersDepositNoBet = users.filter(u =>
+    deposits.some(d => d.user_id === u.user_id) &&
+    !bets.some(b => b.user_id === u.user_id)
+  )
+
+  async function sendCampaign(segment: any[], tipo: string) {
+    // Aqui você pode integrar com o serviço de envio real
+    // Exemplo: await sendBulkEmail(segment, tipo)
+    alert(`Campanha enviada para ${segment.length} usuários do segmento: ${tipo}`)
+  }
 
   useEffect(() => {
     localStorage.setItem("campanhas", JSON.stringify(campaigns))
@@ -182,6 +199,47 @@ export default function CampaignManager() {
             </Card>
           ))}
         </div>
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Campanhas Inteligentes (Segmentação Real)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-4">
+              <h4 className="font-semibold mb-2">Cadastrou, mas não depositou</h4>
+              <p className="text-xs text-muted-foreground mb-2">Usuários que se cadastraram mas ainda não fizeram nenhum depósito.</p>
+              <button
+                className="bg-blue-600 text-white px-3 py-1 rounded mb-2"
+                onClick={() => sendCampaign(usersNoDeposit, "Cadastro sem depósito")}
+                disabled={usersNoDeposit.length === 0}
+              >
+                Enviar E-mail/SMS para {usersNoDeposit.length} usuários
+              </button>
+              <ul className="text-xs max-h-32 overflow-y-auto">
+                {usersNoDeposit.slice(0, 10).map(u => (
+                  <li key={u.user_id}>{u.name} - {u.email} - {u.phone}</li>
+                ))}
+                {usersNoDeposit.length > 10 && <li>...e mais {usersNoDeposit.length - 10} usuários</li>}
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-2">Depositou, mas não apostou</h4>
+              <p className="text-xs text-muted-foreground mb-2">Usuários que depositaram mas ainda não fizeram nenhuma aposta.</p>
+              <button
+                className="bg-green-600 text-white px-3 py-1 rounded mb-2"
+                onClick={() => sendCampaign(usersDepositNoBet, "Depositou sem apostar")}
+                disabled={usersDepositNoBet.length === 0}
+              >
+                Enviar E-mail/SMS para {usersDepositNoBet.length} usuários
+              </button>
+              <ul className="text-xs max-h-32 overflow-y-auto">
+                {usersDepositNoBet.slice(0, 10).map(u => (
+                  <li key={u.user_id}>{u.name} - {u.email} - {u.phone}</li>
+                ))}
+                {usersDepositNoBet.length > 10 && <li>...e mais {usersDepositNoBet.length - 10} usuários</li>}
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
       </TabsContent>
 
       <TabsContent value="create">

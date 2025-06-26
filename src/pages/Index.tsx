@@ -6,8 +6,17 @@ import PlayerSegmentation from "../components/PlayerSegmentation"
 import CampaignManager from "@/components/CampaignManager"
 import AlertCenter from "@/components/AlertCenter"
 import ABTesting from "@/components/ABTesting"
+import { useEffect, useState } from "react"
 
 export default function Index() {
+  const [metrics, setMetrics] = useState<any>(null)
+
+  useEffect(() => {
+    fetch("/api/metrics")
+      .then(res => res.json())
+      .then(setMetrics)
+  }, [])
+
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-amber-500 to-yellow-500 bg-clip-text text-transparent">
@@ -21,41 +30,41 @@ export default function Index() {
             <Users className="h-4 w-4 text-white" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">2.847</div>
-            <p className="text-xs text-emerald-100">+12% em relação ao mês anterior</p>
+            <div className="text-2xl font-bold text-white">{metrics ? metrics.totalUsers : "..."}</div>
+            <p className="text-xs text-emerald-100">Total de usuários cadastrados</p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-blue-500 to-blue-600">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-white">Faturamento Hoje</CardTitle>
+            <CardTitle className="text-sm font-medium text-white">Total de Depósitos</CardTitle>
             <DollarSign className="h-4 w-4 text-white" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">R$ 89,2 mil</div>
-            <p className="text-xs text-blue-100">+8% em relação ao dia anterior</p>
+            <div className="text-2xl font-bold text-white">{metrics ? `R$ ${metrics.sumDeposits.toLocaleString("pt-BR")}` : "..."}</div>
+            <p className="text-xs text-blue-100">{metrics ? `${metrics.totalDeposits} depósitos` : "..."}</p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-amber-500 to-yellow-500">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-white">Conversão VIP</CardTitle>
+            <CardTitle className="text-sm font-medium text-white">Total de Saques</CardTitle>
             <Crown className="h-4 w-4 text-white" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">7,3%</div>
-            <p className="text-xs text-amber-100">+2,1% em relação ao mês anterior</p>
+            <div className="text-2xl font-bold text-white">{metrics ? `R$ ${metrics.sumWithdrawals.toLocaleString("pt-BR")}` : "..."}</div>
+            <p className="text-xs text-amber-100">{metrics ? `${metrics.totalWithdrawals} saques` : "..."}</p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-purple-500 to-purple-600">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-white">Campanhas Ativas</CardTitle>
+            <CardTitle className="text-sm font-medium text-white">Apostas</CardTitle>
             <Bell className="h-4 w-4 text-white" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">15</div>
-            <p className="text-xs text-purple-100">3 com alta performance</p>
+            <div className="text-2xl font-bold text-white">{metrics ? metrics.totalBets : "..."}</div>
+            <p className="text-xs text-purple-100">{metrics ? `Total apostado: R$ ${metrics.sumBets.toLocaleString("pt-BR")}` : "..."}</p>
           </CardContent>
         </Card>
       </div>

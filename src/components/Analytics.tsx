@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts"
+import { useEffect, useState } from "react"
 
 const revenueData = [
   { name: "Jan", revenue: 65000, players: 1200 },
@@ -28,6 +29,27 @@ const activityData = [
 ]
 
 export default function Analytics() {
+  const [metricsByDate, setMetricsByDate] = useState<any>(null)
+
+  useEffect(() => {
+    fetch("/api/metrics-by-date")
+      .then(res => res.json())
+      .then(setMetricsByDate)
+  }, [])
+
+  // Preparar dados para os gráficos
+  const depositData = metricsByDate?.deposits?.map((d: any) => ({
+    name: d._id.slice(5, 10), // mostra MM-DD
+    Depositos: d.total,
+    Valor: d.sum,
+  })) || []
+
+  const betData = metricsByDate?.bets?.map((d: any) => ({
+    name: d._id.slice(5, 10),
+    Apostas: d.total,
+    Valor: d.sum,
+  })) || []
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -126,6 +148,48 @@ export default function Analytics() {
                   <Tooltip />
                   <Line type="monotone" dataKey="sessions" stroke="#8B5CF6" />
                 </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Depósitos por Dia</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={depositData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis yAxisId="left" />
+                  <YAxis yAxisId="right" orientation="right" />
+                  <Tooltip />
+                  <Bar yAxisId="left" dataKey="Depositos" fill="#3B82F6" name="Depósitos" />
+                  <Bar yAxisId="right" dataKey="Valor" fill="#10B981" name="Valor (R$)" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Apostas por Dia</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={betData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis yAxisId="left" />
+                  <YAxis yAxisId="right" orientation="right" />
+                  <Tooltip />
+                  <Bar yAxisId="left" dataKey="Apostas" fill="#8B5CF6" name="Apostas" />
+                  <Bar yAxisId="right" dataKey="Valor" fill="#F59E0B" name="Valor (R$)" />
+                </BarChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
