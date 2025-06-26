@@ -3,7 +3,7 @@ const SECRET_TOKEN = process.env.WEBHOOK_SECRET_TOKEN || 'seu_token_secreto_aqui
 
 import { saveUser, saveDeposit, saveWithdrawal, saveBet } from '../../lib/crmActions'
 
-export default function handler(req: any, res: any) {
+export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' })
   }
@@ -21,16 +21,16 @@ export default function handler(req: any, res: any) {
   // Processamento dos eventos
   switch (event.event) {
     case 'user_registered':
-      saveUser(event.data)
+      await saveUser(event.data)
       break
     case 'deposit_made':
-      saveDeposit(event.data)
+      await saveDeposit(event.data)
       break
     case 'withdrawal_made':
-      saveWithdrawal(event.data)
+      await saveWithdrawal(event.data)
       break
     case 'bet_placed':
-      saveBet(event.data)
+      await saveBet(event.data)
       break
     default:
       console.log('Evento desconhecido:', event.event)
