@@ -1,6 +1,3 @@
-// Defina um token secreto para validar as requisições do webhook
-const SECRET_TOKEN = process.env.WEBHOOK_SECRET_TOKEN || 'seu_token_secreto_aqui'
-
 import { saveUser, saveDeposit, saveWithdrawal, saveBet } from '../../lib/crmActions'
 
 export default async function handler(req: any, res: any) {
