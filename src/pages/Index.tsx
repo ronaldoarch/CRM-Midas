@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import StatCard from "@/components/StatCard"
 import { Users, DollarSign, Crown, Bell } from "lucide-react"
 import Analytics from "@/components/Analytics"
 import PlayerSegmentation from "../components/PlayerSegmentation"
@@ -26,49 +26,30 @@ export default function Index() {
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card className="bg-gradient-to-br from-emerald-500 to-emerald-600">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-white">Jogadores Ativos</CardTitle>
-            <Users className="h-4 w-4 text-white" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-white">{metrics ? metrics.totalUsers : "..."}</div>
-            <p className="text-xs text-emerald-100">Total de usuários cadastrados</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-blue-500 to-blue-600">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-white">Total de Depósitos</CardTitle>
-            <DollarSign className="h-4 w-4 text-white" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-white">{metrics ? `R$ ${metrics.sumDeposits.toLocaleString("pt-BR")}` : "..."}</div>
-            <p className="text-xs text-blue-100">{metrics ? `${metrics.totalDeposits} depósitos` : "..."}</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-amber-500 to-yellow-500">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-white">Total de Saques</CardTitle>
-            <Crown className="h-4 w-4 text-white" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-white">{metrics ? `R$ ${metrics.sumWithdrawals.toLocaleString("pt-BR")}` : "..."}</div>
-            <p className="text-xs text-amber-100">{metrics ? `${metrics.totalWithdrawals} saques` : "..."}</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-purple-500 to-purple-600">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-white">Apostas</CardTitle>
-            <Bell className="h-4 w-4 text-white" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-white">{metrics ? metrics.totalBets : "..."}</div>
-            <p className="text-xs text-purple-100">{metrics ? `Total apostado: R$ ${metrics.sumBets.toLocaleString("pt-BR")}` : "..."}</p>
-          </CardContent>
-        </Card>
+        <StatCard
+          value={metrics ? metrics.totalUsers : "..."}
+          label="Jogadores Ativos"
+          icon={<Users className="h-7 w-7" />}
+          color="from-emerald-500 to-emerald-600"
+        />
+        <StatCard
+          value={metrics ? `R$ ${metrics.sumDeposits?.toLocaleString("pt-BR")}` : "..."}
+          label={metrics ? `${metrics.totalDeposits} Depósitos` : "Total de Depósitos"}
+          icon={<DollarSign className="h-7 w-7" />}
+          color="from-blue-500 to-blue-600"
+        />
+        <StatCard
+          value={metrics ? `R$ ${metrics.sumWithdrawals?.toLocaleString("pt-BR")}` : "..."}
+          label={metrics ? `${metrics.totalWithdrawals} Saques` : "Total de Saques"}
+          icon={<Crown className="h-7 w-7" />}
+          color="from-amber-500 to-yellow-500"
+        />
+        <StatCard
+          value={metrics ? metrics.totalBets : "..."}
+          label={metrics ? `Total apostado: R$ ${metrics.sumBets?.toLocaleString("pt-BR")}` : "Apostas"}
+          icon={<Bell className="h-7 w-7" />}
+          color="from-purple-500 to-purple-600"
+        />
       </div>
 
       <Tabs defaultValue="analytics" className="w-full">
