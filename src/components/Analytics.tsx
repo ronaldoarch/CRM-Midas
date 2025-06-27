@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import { useEffect, useState } from "react"
 
 export default function Analytics() {
@@ -7,14 +7,12 @@ export default function Analytics() {
   const [pageviewsData, setPageviewsData] = useState<any[]>([])
   const [metrics, setMetrics] = useState<any>(null)
   const [users, setUsers] = useState<any[]>([])
-  const [bets, setBets] = useState<any[]>([])
 
   useEffect(() => {
     fetch("/api/metrics-by-date").then(res => res.json()).then(setMetricsByDate)
     fetch("/api/pageviews").then(res => res.json()).then(data => setPageviewsData(data.pageviews || []))
     fetch("/api/metrics").then(res => res.json()).then(setMetrics)
     fetch("/api/users").then(res => res.json()).then(setUsers)
-    fetch("/api/bets").then(res => res.json()).then(setBets)
   }, [])
 
   // Gráficos reais
