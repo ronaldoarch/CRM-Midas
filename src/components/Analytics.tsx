@@ -2,51 +2,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts"
 import { useEffect, useState } from "react"
 
-const revenueData = [
-  { name: "Jan", revenue: 65000, players: 1200 },
-  { name: "Fev", revenue: 72000, players: 1350 },
-  { name: "Mar", revenue: 85000, players: 1500 },
-  { name: "Abr", revenue: 92000, players: 1650 },
-  { name: "Mai", revenue: 88000, players: 1580 },
-  { name: "Jun", revenue: 95000, players: 1700 },
-]
-
-const gamePreferences = [
-  { name: "Slots", value: 45, color: "#10B981" },
-  { name: "Blackjack", value: 25, color: "#3B82F6" },
-  { name: "Roleta", value: 15, color: "#F59E0B" },
-  { name: "Poker", value: 10, color: "#8B5CF6" },
-  { name: "Outros", value: 5, color: "#6B7280" },
-]
-
-const activityData = [
-  { hour: "00:00", sessions: 120 },
-  { hour: "04:00", sessions: 80 },
-  { hour: "08:00", sessions: 200 },
-  { hour: "12:00", sessions: 350 },
-  { hour: "16:00", sessions: 420 },
-  { hour: "20:00", sessions: 380 },
-]
-
 export default function Analytics() {
   const [metricsByDate, setMetricsByDate] = useState<any>(null)
   const [pageviewsData, setPageviewsData] = useState<any[]>([])
+  const [metrics, setMetrics] = useState<any>(null)
+  const [users, setUsers] = useState<any[]>([])
+  const [bets, setBets] = useState<any[]>([])
 
   useEffect(() => {
-    fetch("/api/metrics-by-date")
-      .then(res => res.json())
-      .then(setMetricsByDate)
+    fetch("/api/metrics-by-date").then(res => res.json()).then(setMetricsByDate)
+    fetch("/api/pageviews").then(res => res.json()).then(data => setPageviewsData(data.pageviews || []))
+    fetch("/api/metrics").then(res => res.json()).then(setMetrics)
+    fetch("/api/users").then(res => res.json()).then(setUsers)
+    fetch("/api/bets").then(res => res.json()).then(setBets)
   }, [])
 
-  useEffect(() => {
-    fetch("/api/pageviews")
-      .then(res => res.json())
-      .then(data => setPageviewsData(data.pageviews || []))
-  }, [])
-
-  // Preparar dados para os gráficos
+  // Gráficos reais
   const depositData = metricsByDate?.deposits?.map((d: any) => ({
-    name: d._id.slice(5, 10), // mostra MM-DD
+    name: d._id.slice(5, 10),
     Depositos: d.total,
     Valor: d.sum,
   })) || []
@@ -57,13 +30,19 @@ export default function Analytics() {
     Valor: d.sum,
   })) || []
 
-  // Preparar dados de pageviews agregados por data
+  // Pageviews reais
   const pageviewsByDate: Record<string, number> = {}
   pageviewsData.forEach((pv: any) => {
     if (!pageviewsByDate[pv._id.date]) pageviewsByDate[pv._id.date] = 0
     pageviewsByDate[pv._id.date] += pv.total
   })
   const pageviewsChartData = Object.entries(pageviewsByDate).map(([date, total]) => ({ date, total }))
+
+  // LTV Médio (Lifetime Value)
+  const ltv = metrics && users.length > 0 ? (metrics.sumDeposits / users.length) : null
+  // Taxa de Retenção e Churn: Exemplo simples (ajuste conforme sua lógica real)
+  const retention = users.length > 0 ? ((users.filter(u => u.last_login).length / users.length) * 100) : null
+  const churn = retention !== null ? (100 - retention) : null
 
   return (
     <div className="space-y-6">
@@ -73,101 +52,36 @@ export default function Analytics() {
             <CardTitle>LTV Médio</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">R$ 2.847</div>
-            <p className="text-xs text-muted-foreground">+5% em relação ao mês anterior</p>
+            <div className="text-2xl font-bold">
+              {ltv !== null ? `R$ ${ltv.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}` : "N/A"}
+            </div>
+            <p className="text-xs text-muted-foreground">{ltv !== null ? "+ calculado sobre dados reais" : "Sem dados suficientes"}</p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader>
             <CardTitle>Taxa de Retenção</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">73,2%</div>
-            <p className="text-xs text-muted-foreground">+2,1% em relação ao mês anterior</p>
+            <div className="text-2xl font-bold">
+              {retention !== null ? `${retention.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%` : "N/A"}
+            </div>
+            <p className="text-xs text-muted-foreground">{retention !== null ? "+ calculado sobre dados reais" : "Sem dados suficientes"}</p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader>
             <CardTitle>Taxa de Churn</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">8,4%</div>
-            <p className="text-xs text-muted-foreground">-1,2% em relação ao mês anterior</p>
+            <div className="text-2xl font-bold">
+              {churn !== null ? `${churn.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%` : "N/A"}
+            </div>
+            <p className="text-xs text-muted-foreground">{churn !== null ? "+ calculado sobre dados reais" : "Sem dados suficientes"}</p>
           </CardContent>
         </Card>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Receita vs Jogadores</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={revenueData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis yAxisId="left" />
-                  <YAxis yAxisId="right" orientation="right" />
-                  <Tooltip />
-                  <Bar yAxisId="left" dataKey="revenue" fill="#3B82F6" name="Receita" />
-                  <Bar yAxisId="right" dataKey="players" fill="#10B981" name="Jogadores" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Preferências de Jogos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={gamePreferences}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {gamePreferences.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>Atividade por Horário</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={activityData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="hour" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="sessions" stroke="#8B5CF6" />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
         <Card>
           <CardHeader>
             <CardTitle>Depósitos por Dia</CardTitle>
@@ -188,7 +102,6 @@ export default function Analytics() {
             </div>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader>
             <CardTitle>Apostas por Dia</CardTitle>
@@ -209,7 +122,6 @@ export default function Analytics() {
             </div>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader>
             <CardTitle>Pageviews por Dia</CardTitle>
