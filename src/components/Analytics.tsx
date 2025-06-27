@@ -7,13 +7,27 @@ export default function Analytics() {
   const [pageviewsData, setPageviewsData] = useState<any[]>([])
   const [metrics, setMetrics] = useState<any>(null)
   const [users, setUsers] = useState<any[]>([])
+  const [startDate, setStartDate] = useState<string>("")
+  const [endDate, setEndDate] = useState<string>("")
+
+  // Função para buscar dados com filtro de data
+  function fetchAllData(start?: string, end?: string) {
+    const params = start && end ? `?start=${start}&end=${end}` : ""
+    fetch(`/api/metrics-by-date${params}`).then(res => res.json()).then(setMetricsByDate)
+    fetch(`/api/pageviews${params}`).then(res => res.json()).then(data => setPageviewsData(data.pageviews || []))
+    fetch(`/api/metrics${params}`).then(res => res.json()).then(setMetrics)
+    fetch(`/api/users${params}`).then(res => res.json()).then(setUsers)
+  }
 
   useEffect(() => {
-    fetch("/api/metrics-by-date").then(res => res.json()).then(setMetricsByDate)
-    fetch("/api/pageviews").then(res => res.json()).then(data => setPageviewsData(data.pageviews || []))
-    fetch("/api/metrics").then(res => res.json()).then(setMetrics)
-    fetch("/api/users").then(res => res.json()).then(setUsers)
+    fetchAllData()
   }, [])
+
+  function handleFilter() {
+    if (startDate && endDate) {
+      fetchAllData(startDate, endDate)
+    }
+  }
 
   // Gráficos reais
   const depositData = metricsByDate?.deposits?.map((d: any) => ({
@@ -44,6 +58,14 @@ export default function Analytics() {
 
   return (
     <div className="space-y-6">
+      {/* Filtro de data */}
+      <div className="flex flex-wrap gap-2 items-center mb-4">
+        <label className="text-white">Data inicial:</label>
+        <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="rounded px-2 py-1" />
+        <label className="text-white">Data final:</label>
+        <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="rounded px-2 py-1" />
+        <button onClick={handleFilter} className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">Filtrar</button>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
